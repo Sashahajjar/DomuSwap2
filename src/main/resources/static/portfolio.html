@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;700&family=Judson&display=swap" rel="stylesheet">
+    <title>Your account</title>
+    <link rel="stylesheet" href="styles/portfolio.css">
+    
+</head>
+<body>
+    <header>
+         <div class="header-left">
+         	<a href="main_page.html" style="text-decoration: none; color: inherit;">
+		    <img src="images/logo_white.png" alt="DomuSwap Logo" class="middle-logo">
+		    </a>
+		    <h1 class="logo-text">DomuSwap</h1>
+
+		  </div>
+        <div id="central_header">
+            <h1>Your Portfolio!</h1>
+            <p>Put your information up to date in this section!</p>
+        </div>
+        <div id="right_header">
+            <button id="add_button">
+                <span class="icon">+</span>
+                <span class="text">
+                    ADD TO YOUR<br>
+                    PORTFOLIO
+                </span>
+            </button>
+        </div>
+    </header>
+
+    <div id="popup" class="modal">
+        <div class="modal-content">
+            <div id="header_popup">
+                <div id="text_popup">
+                    <h2 id="title_popup">ADD TO YOUR PORTFOLIO!</h2>
+                    <p class="subtitle">Share your place with trusted travelers around the world</p>
+                </div>
+                <span id="close_popup" class="close-x">&times;</span>
+            </div>
+            <div id="greyline"></div>
+            <div id="field_section_popup">
+                <div id="left_part">
+                    <div id="address_input">
+                        <label class="label_input">Address*</label>
+                        <input type="text" placeholder="Enter the address" class="input_address"/>
+                    </div>
+
+                    <div class="search-container">
+                        <label for="country-search" class="label_input">Country*</label>
+                        <span class="search-icon">&#128269;</span>
+                        <input type="text" id="country-search" placeholder="Enter Country of property" class="input_country">
+                    </div>
+
+                    <div class="container">
+                        <div class="form-group">
+                            <label class="label_input" for="apartmentSurface">Apartment Surface*</label>
+                            <div class="container_surface_input">
+                                <input type="number" id="apartmentSurface" name="apartmentSurface" min="0" class="input_surface">
+                                <span class="unit">m²</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="label_input" for="possibleGuests">Possible guests*</label>
+                            <input type="number" id="possibleGuests" name="possibleGuests" min="0" class="input_possible_guest">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="right_part">
+                    <div class="container">
+                        <div class="form-group">
+                            <label class="label_input" for="homeDescription">Description</label>
+                            <textarea id="homeDescription" name="homeDescription"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <div class="form-group">
+                            <label class="label_input" for="homeService">Add services</label>
+                            <textarea id="homeService" name="homeService"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-bottom-section">
+                        <div class="image-upload">
+                            <label class="label_input">Upload Image</label>
+                            <input type="file" name="image" />
+                        </div>
+
+                        <div class="amenities-box">
+                            <strong>Select Amenities:</strong>
+                            <div class="amenities-grid">
+                                <label><input type="checkbox" name="amenities" value="tv" /> TV 📺</label>
+                                <label><input type="checkbox" name="amenities" value="wifi" /> Wi-Fi 🌐</label>
+                                <label><input type="checkbox" name="amenities" value="ac" /> AC ❄️</label>
+                                <label><input type="checkbox" name="amenities" value="balcony" /> Balcony 🪟</label>
+                                <label><input type="checkbox" name="amenities" value="laundry" /> Laundry 🧺</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="confirm_button">Confirm</button>
+        </div>
+    </div>
+
+    <section id="announce_section">
+        <div class="announce"><!-- Dynamic example -->
+            <img src="" alt="primary_image" class="primary_img"/>
+            <div class="informations">
+                <p class="place_name_first">Place Name</p>
+                <p class="place_name_second">Place, 14</p>
+                <p class="description">Charming 2-bedroom apartment in the heart of Lisbon, perfect for a quiet escape or a remote work stay. Sunlit interiors, a cozy<br/> reading nook, and a private balcony overlooking the city. Includes Wi-Fi, workspace, and all essentials. No pets or smoking allowed.<br/> Guests are kindly asked to water the plants and keep noise to a minimum after 10 PM.</p>
+                <button class="edit_listing_button">Edit Listing</button>
+            </div>
+        </div>
+
+        <div class="announce"><!-- Another dynamic example -->
+            <img src="" alt="primary_image" class="primary_img"/>
+            <div class="informations">
+                <p class="place_name_first">Place Name</p>
+                <p class="place_name_second">Place, 14</p>
+                <p class="description">Charming 2-bedroom apartment in the heart of Lisbon, perfect for a quiet escape or a remote work stay. Sunlit interiors, a cozy<br/> reading nook, and a private balcony overlooking the city. Includes Wi-Fi, workspace, and all essentials. No pets or smoking allowed.<br/> Guests are kindly asked to water the plants and keep noise to a minimum after 10 PM.</p>
+                <button class="edit_listing_button">Edit Listing</button>
+            </div>
+			<div id="editModal" class="modal">
+			  <div class="modal-content">
+			    <span class="close" id="editModalClose">&times;</span>
+			    <h2>Edit Your Listing</h2>
+
+			    <form id="editListingForm">
+			      <input type="hidden" name="housing_id" id="edit_housing_id" />
+
+			      <label>Title:</label>
+			      <input type="text" name="title" id="edit_title" class="input_address" />
+
+			      <label>Description:</label>
+			      <textarea name="description" id="edit_description" class="input_address"></textarea>
+
+			      <label>Location:</label>
+			      <input type="text" name="location" id="edit_location" class="input_address" />
+
+			      <label>Services (comma-separated):</label>
+			      <input type="text" name="services" id="edit_services" class="input_address" />
+
+			      <button type="submit" class="confirm_button">Save Changes</button>
+			      <button type="button" id="deleteListing" class="confirm_button" style="background-color: red; margin-top: 10px;">Delete Listing</button>
+			    </form>
+			  </div>
+			</div>
+
+        </div>
+    </section>
+
+	<script>
+
+	document.addEventListener("DOMContentLoaded", () => {
+	  const popup = document.getElementById("popup");
+	  const closePopup = document.getElementById("close_popup");
+	  
+	  document.getElementById("add_button").addEventListener("click", () => {
+	    popup.style.display = "flex";
+	  });
+
+	  closePopup.addEventListener("click", () => {
+	    popup.style.display = "none";
+	  });
+
+	  // Close popup when clicking outside
+	  window.addEventListener("click", (event) => {
+	    if (event.target === popup) {
+	      popup.style.display = "none";
+	    }
+	  });
+
+	  const confirmBtn = document.querySelector(".confirm_button");
+	  confirmBtn.addEventListener("click", () => {
+	    const address = document.querySelector(".input_address").value.trim();
+	    const country = document.querySelector(".input_country").value.trim();
+	    const surface = document.getElementById("apartmentSurface").value.trim();
+	    const guests = document.getElementById("possibleGuests").value.trim();
+	    const description = document.getElementById("homeDescription").value.trim();
+	    const servicesRaw = document.getElementById("homeService").value;
+	    const imageFile = document.querySelector('input[type="file"]').files[0];
+
+	    const services = servicesRaw
+	      .split(/\n|,/)
+	      .map(s => s.trim())
+	      .filter(s => s.length > 0);
+
+	    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+	    if (!user || !user.id) {
+	      alert("You must be logged in as an owner to add a listing.");
+	      return;
+	    }
+
+	    if (!address || !country || !surface || !guests || !imageFile) {
+	      alert("❗ Please fill out all required fields and choose an image.");
+	      return;
+	    }
+
+	    const formData = new FormData();
+	    formData.append("title", address);
+	    formData.append("description", description || "No description provided.");
+	    formData.append("location", country);
+	    formData.append("constraint_text", `Max ${guests} guests, ${surface}m²`);
+	    formData.append("ownerId", user.id);
+	    formData.append("services", services.join(","));
+	    formData.append("image", imageFile);
+	    formData.append("maxGuests", guests);
+		
+		const selectedAmenities = Array.from(document.querySelectorAll('input[name="amenities"]:checked'))
+		  .map(cb => cb.value)
+		  .join(',');
+
+		formData.append("amenities", selectedAmenities);
+
+	    fetch("http://localhost:8080/api/housing/addWithImage", {
+	      method: "POST",
+	      body: formData
+	    })
+	      .then(res => {
+	        if (res.ok) {
+	          alert("✅ Listing added successfully!");
+	          window.location.reload();
+	        } else {
+	          return res.text().then(text => { throw new Error(text); });
+	        }
+	      })
+	      .catch(err => {
+	        console.error("Add listing error:", err);
+	        alert("❌ Failed to add listing: " + err.message);
+	      });
+	  });
+
+	  // Load owner listings
+	  function loadOwnerListings() {
+	    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+	    if (!user || !user.id) return;
+
+	    fetch(`http://localhost:8080/api/housing/owner/${user.id}`)
+	      .then(res => res.json())
+	      .then(housings => {
+	        console.log("Received housings:", housings); // Debug log
+	        const container = document.getElementById("announce_section");
+	        container.innerHTML = "";
+	        housings.forEach(house => {
+	          console.log("Processing house:", house); // Debug log
+	          console.log("Image URL:", house.imageUrl); // Debug log
+	          const div = document.createElement("div");
+	          div.className = "announce";
+	          const imageUrl = house.imageUrl ? `http://localhost:8080${house.imageUrl}` : 'http://localhost:8080/images/logo.png';
+	          console.log("Constructed imageUrl:", imageUrl); // Debug log
+	          div.innerHTML = `
+	            <img src="${imageUrl}" class="primary_img" style="max-width:300px; height:250px; object-fit:cover;" onerror="this.src='http://localhost:8080/images/logo.png'" />
+	            <div class="informations">
+	              <p class="place_name_first">${house.title}</p>
+	              <p class="place_name_second">${house.location}</p>
+	              <p class="description">${house.description}</p>
+	              <button class="edit_listing_button">Edit Listing</button>
+	            </div>`;
+	          container.appendChild(div);
+	        });
+	      })
+	      .catch(err => {
+	        console.error("Failed to load owner listings:", err);
+	      });
+	  }
+
+	  loadOwnerListings();
+	});
+	
+	
+	</script>
+
+
+</body>
+</html>

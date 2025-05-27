@@ -1,0 +1,140 @@
+/* ---------------------------------- */
+/* Hero Section */
+/* ---------------------------------- */
+.hero-heading {
+  font-family: 'Judson', serif;
+  font-weight: 100;
+  font-size: 135px; /* Taille de la police pour le titre principal */
+  line-height: 100%;
+  text-align: center; /* Centrer le texte */
+  color: #043F0E; /* Couleur du texte */
+  margin-top: 300px; /* Décalage du titre vers le bas */
+}
+
+/* ---------------------------------- */
+/* Search Bar */
+/* ---------------------------------- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 1011px; /* Largeur de la barre de recherche */
+  height: 82px; /* Hauteur de la barre de recherche */
+  background: rgba(126, 167, 128, 0.3); /* Fond semi-transparent de la barre de recherche */
+  border: 1px solid #043F0E; /* Bordure autour de la barre de recherche */
+  border-radius: 29px; /* Coins arrondis */
+  margin: 100px auto 0 auto; /* Positionnement centré et espacée du haut */
+  padding: 0 20px; /* Espacement intérieur de la barre de recherche */
+}
+
+.search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 16px;
+  color: #043F0E; /* Couleur du texte dans le champ de recherche */
+}
+/* Change color for text input placeholders */
+.search-bar input::placeholder {
+  color: #043F0E;
+  opacity: 0.6;
+  text-align: center;
+}
+
+/* Styling for the date input's placeholder text */
+#check-in::-webkit-calendar-picker-indicator,
+#check-out::-webkit-calendar-picker-indicator {
+    color: #043F0E;
+  opacity: 0.6;
+  text-align: center;
+}
+
+#check-in,
+#check-out {
+  color: #043F0E;
+  opacity: 0.6;
+  text-align: center;
+}
+
+.search-field label {
+  font-family: 'Judson', serif;
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+  display: block;
+  color: #043F0E;
+}
+
+.search-field p {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 16px;
+  text-align: center;
+}
+
+
+.search-btn {
+  background: #7EA780; /* Couleur de fond du bouton de recherche */
+  border: none;
+  border-radius: 50%; /* Bouton circulaire */
+  font-size: 30px; /* Taille du texte dans le bouton */
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #043F0E;
+}
+.account-box {
+  display: flex;
+  align-items: center;
+  background: #043F0E;
+  border: 1px solid #043F0E;
+  border-radius: 18px;
+  padding: 5px 15px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #fff;
+  margin-right: 20px;
+}
+
+.account-name {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 16px;
+  color: #fff;
+  background-color: #043F0E;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.account-name:hover {
+  background-color: #064d11;
+}
+
+.logout-button {
+  background-color: #043F0E;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: 'Josefin Sans', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: #064d11;
+}
+
+
+.close {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #043F0E;
+}

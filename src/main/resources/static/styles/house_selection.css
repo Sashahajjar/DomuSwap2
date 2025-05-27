@@ -1,0 +1,130 @@
+/* ============================ */
+/*     HOUSE SELECTION PAGE     */
+/* ============================ */
+
+html {
+  scroll-padding-top: 120px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-title);
+  color: var(--green-dark);
+  background-color: var(--bg);
+  background-image: url("../images/image1.png"), url("../images/logo_opaque_beige.png");
+  background-size: 60%, 600px;
+  background-position: right top, left top;
+  background-repeat: no-repeat;
+}
+
+/* ---------------------------------- */
+/* Search Bar */
+/* ---------------------------------- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: rgba(126, 167, 128, 0.3);
+  border: 1px solid var(--green-dark);
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin: 10px auto;
+  width: 100%;
+  max-width: 900px;
+}
+
+.search-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Josefin Sans', sans-serif; 
+  font-size: 16px;
+  color: var(--green-dark);
+  width: 160px;
+  text-align: center;
+}
+
+
+.search-field label {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--green-dark);
+  margin-bottom: 5px;
+}
+
+.search-btn {
+  background: var(--green-soft);
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  padding: 10px;
+  cursor: pointer;
+  color: var(--green-dark);
+}
+
+/* ---------------------------------- */
+/* Listing Grid (House Cards) */
+/* ---------------------------------- */
+.listing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  padding: 40px 40px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid var(--green-dark);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  text-align: center;
+  display: block;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card h3 {
+  font-family: var(--font-title);
+  font-size: 22px;
+  color: var(--green-dark);
+  margin: 15px 0 10px;
+}
+
+.card p {
+  font-family: var(--font-title);
+  font-size: 16px;
+  color: var(--green-dark);
+  margin-bottom: 20px;
+}
+
+a.card {
+  text-decoration: none;
+  color: inherit;
+}
+
+a.card:hover {
+  text-decoration: none;
+  color: var(--green-dark);
+}
+

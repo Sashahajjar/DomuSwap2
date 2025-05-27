@@ -1,0 +1,48 @@
+:root {
+    --bg: #FAF9F7;
+    --green-dark: #193E15;
+    --neutral-dark: #2A2729;
+    --green-soft: #7EA780;
+    --accent: #E4D9C7;
+    --font-title: 'Josefin Sans', sans-serif;
+    --font-body: 'Judson', serif;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-title);
+    margin: 0;
+    color: var(--neutral-dark);
+}
+
+body {
+    background-color: var(--bg);
+    background-image: url("images/LOGO%20opacit%C3%A9%20Grand%20(1).png");
+    background-repeat: no-repeat;
+    background-size: 600px;
+    background-position: left 5%;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.btn {
+    padding: 12px;
+    font-family: var(--font-title);
+    background-color: var(--neutral-dark);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: bold;
+    width: 100%;
+}

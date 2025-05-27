@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile User Page</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;700&family=Judson&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #FAF9F7;
+            --green-dark: #193E15;
+            --neutral-dark: #2A2729;
+            --green-soft: #7EA780;
+            --accent: #E4D9C7;
+            --font-title: 'Josefin Sans', sans-serif;
+            --font-body: 'Judson', serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: url("images/logo_opaque_beige.png"), url("images/globe_opaque_beige.png");
+            background-repeat: no-repeat, no-repeat;
+            background-size: 500px, 900px;
+            background-position: left 10%, right 20%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid #ddd;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .welcome-section{
+        text-align: right;
+        }
+
+        .header img {
+            height: 60px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+
+        .welcome-section {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome-title {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: var(--green-dark);
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .profile-layout {
+            display: flex;
+            gap: 40px;
+        }
+
+        .profile-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            background: #ddd;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .user-name {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            margin: 3px 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .nav-links {
+            margin-top: 40px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .nav-item {
+            font-weight: bold;
+            padding: 12px 0;
+            border-top: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            color: var(--green-dark);
+        }
+
+        .profile-right {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .rating-small{
+           position: absolute;
+		   top: 20px;
+		   right: 30px;
+	       background: white;
+		   padding: 5px 10px;
+		    border-radius: 8px;
+		    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+		    font-family: var(--font-title);
+		    font-size: 1rem;
+		    color: var(--green-dark);
+		    display: flex;
+		    align-items: center;
+		    gap: 5px;
+        
+        }
+        
+        .rating-small .rating-star {
+    font-size: 1rem;
+    color: gold;
+}
+
+
+      .rating-label{
+    font-family: var(--font-title);
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--green-soft);
+    text-align: center;
+      }
+
+        .rating-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .rating-text {
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+        }
+
+        .rating-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--neutral-dark);
+        }
+
+        .rating-star {
+            font-size: 1.5rem;
+            margin-left: 8px;
+            color: gold;
+        }
+
+        .history-grid {
+            display: flex;
+            flex-direction: column;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .history-card {
+         	text-deciration: none;
+            background: white;
+            padding: 50px;
+            border-radius: 16px;
+            width: 350px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            font-family: var(--font-title);
+            color: var(--green-soft);
+            font-weight: bold;
+            display: block;
+            font-size: 1.2 rem;
+        }
+
+        .separator {
+        width: 60%;
+            margin: 30px 0;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+	<div class="header">
+	
+		<a href = "main_page.html">
+		<img src="images/logo.png" alt="DomuSwap Logo">
+		</a>
+	    <div class="welcome-section">
+	        <h1 class="welcome-title">Welcome Back to Your Account!</h1>
+	        <p class="welcome-subtitle">Stay up to date with new information on this page</p>
+	    </div>
+	    <div class="rating-small">
+	    <div class = "rating-label">RATING</div>
+	    <div class="rating-number">4.8 <span class="rating-star">⭐</span></div>
+	</div>
+	</div>
+    
+
+    <div class="container">
+       
+    </div>
+
+        <div class="profile-layout">
+            <div class="profile-left">
+                <div class="profile-pic"></div>
+                <div class="user-name" id="ownerName">EVAN KESTANE</div>
+				<div class="user-info">
+				    <p id="ownerEmail">evankestane@gmail.com</p>
+				    <p>Customer Since 1989</p>
+				</div>
+
+                <div class="nav-links">
+                    <div class="nav-item">SETTINGS</div>
+                    <div class="nav-item" style="color: red;" id="logoutBtn">DISCONNECT</div>
+                </div>
+            </div>
+
+            <div class="profile-right">
+                
+
+                <div class="history-grid">
+                    <a href="#" onclick="navigateToSavedListings()" class="history-card">SAVED LISTINGS</a>
+                    
+                    <div class="separator"></div>
+                    
+                    <a href="#" onclick="navigateToTripsHistory()" class="history-card">TRIPS HISTORY</a>
+                </div>
+            </div>
+        </div>
+    
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	  const user = JSON.parse(localStorage.getItem('loggedInUser'));
+
+	  if (user) {
+	    const upperName = user.name.toUpperCase();
+
+	    document.getElementById('ownerName').textContent = upperName;
+	    document.getElementById('ownerEmail').textContent = user.email;
+
+	    const welcomeTitle = document.querySelector('.welcome-title');
+	    if (welcomeTitle) {
+	      welcomeTitle.textContent = `Welcome Back to Your Account ${upperName}!`;
+	    }
+	  } else {
+	    // Not logged in? Redirect to main page
+	    window.location.href = 'main_page.html';
+	  }
+	});
+
+    function getUserId() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('userId');
+    }
+
+    function navigateToSavedListings() {
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (user && user.id) {
+            window.location.href = 'saved_listings?userId=' + user.id;
+        } else {
+            alert('Please log in to view saved listings');
+            window.location.href = 'main_page.html';
+        }
+    }
+
+    function navigateToTripsHistory() {
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (user && user.id) {
+            window.location.href = 'reservations?userId=' + user.id;
+        } else {
+            alert('Please log in to view trips history');
+            window.location.href = 'main_page.html';
+        }
+    }
+</script>
+
+</body>
+</html>
