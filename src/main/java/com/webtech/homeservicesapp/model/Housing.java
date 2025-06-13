@@ -1,5 +1,7 @@
 package com.webtech.homeservicesapp.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +28,16 @@ public class Housing {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference(value = "owner-housing")
     private User owner;
 
-    @OneToMany(mappedBy = "housing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "housing", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference(value = "housing-services")
     private List<RequestedService> services = new ArrayList<>();
+
+    @OneToMany(mappedBy = "housing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "housing-reservations")
+    private List<Reservation> reservations = new ArrayList<>();
 
     // ——— Bean property for JSP (so you can do ${housing.id}) ———
     public Long getId() {

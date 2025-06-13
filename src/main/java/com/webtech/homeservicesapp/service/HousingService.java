@@ -12,10 +12,11 @@ import com.webtech.homeservicesapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.NoSuchElementException;    
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -122,9 +123,15 @@ public class HousingService {
         )).collect(Collectors.toList());
     }
 
-    public HousingWithServicesDTO getHousingWithServices(Long id) {
-        Housing h = housingRepository.findById(id)
+    @Transactional(readOnly = true)
+    public Housing getHousingById(Long id) {
+        return housingRepository.findByIdWithServices(id)
                 .orElseThrow(() -> new NoSuchElementException("No housing found with id " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public HousingWithServicesDTO getHousingWithServices(Long id) {
+        Housing h = getHousingById(id);
 
         HousingWithServicesDTO dto = new HousingWithServicesDTO();
         dto.setTitle(h.getTitle());
@@ -154,11 +161,17 @@ public class HousingService {
         housing.setTitle(dto.getTitle());
         housing.setDescription(dto.getDescription());
         housing.setLocation(dto.getLocation());
-        housing.setPhoto_1(dto.getPhoto_1());
+        
+        // Only update photo if a new image was uploaded
+        if (dto.getImageFile() != null && !dto.getImageFile().isEmpty()) {
+            housing.setPhoto_1(dto.getPhoto_1());
+        }
+        
         housing.setPhoto_2(dto.getPhoto_2());
         housing.setPhoto_3(dto.getPhoto_3());
         housing.setConstraint_text(dto.getConstraint_text());
         housing.setMaxGuests(dto.getMaxGuests());
+        housing.setAmenities(dto.getAmenities());
 
         serviceRepository.deleteAll(housing.getServices());
 

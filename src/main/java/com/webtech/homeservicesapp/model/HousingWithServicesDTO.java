@@ -1,5 +1,6 @@
 package com.webtech.homeservicesapp.model;
 
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public class HousingWithServicesDTO {
@@ -16,6 +17,15 @@ public class HousingWithServicesDTO {
     private String imagePath;
     private String amenities;
     private Integer maxGuests;
+    private MultipartFile imageFile;
+
+    public MultipartFile getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(MultipartFile imageFile) {
+        this.imageFile = imageFile;
+    }
 
     public String getConstraintText() {
         return constraintText;

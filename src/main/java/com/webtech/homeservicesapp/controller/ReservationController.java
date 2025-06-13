@@ -50,6 +50,11 @@ public class ReservationController {
                                     @RequestParam("checkOut") String checkOut,
                                     @RequestParam("guestCount") int guestCount) {
         try {
+            // Validate date format
+            if (!checkIn.matches("\\d{4}-\\d{2}-\\d{2}") || !checkOut.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                return ResponseEntity.badRequest().body("Invalid date format. Please use YYYY-MM-DD format.");
+            }
+
             // Convert input strings to date
             LocalDate checkInDate = LocalDate.parse(checkIn);
             LocalDate checkOutDate = LocalDate.parse(checkOut);
@@ -73,21 +78,13 @@ public class ReservationController {
             // Calculate number of nights
             long numberOfNights = java.time.temporal.ChronoUnit.DAYS.between(checkInDate, checkOutDate);
             
-            // Calculate total price (assuming a base price of 100 per night per guest)
-            double basePricePerNight = 100.0;
-            double totalPrice = basePricePerNight * numberOfNights * guestCount;
-
             // Create and save the reservation
             Reservation reservation = new Reservation();
             reservation.setHousing(housing);
             reservation.setUser(user);
             reservation.setCheckInDate(checkInDate);
             reservation.setCheckOutDate(checkOutDate);
-            reservation.setCheckInDate2(checkInDate);  // Set both date fields
-            reservation.setCheckOutDate2(checkOutDate); // Set both date fields
-            reservation.setGuests(guestCount);         // Set both guest count fields
-            reservation.setGuestCount(guestCount);     // Set both guest count fields
-            reservation.setTotalPrice(totalPrice);
+            reservation.setGuestCount(guestCount);
             reservation.setStatus(ReservationStatus.PENDING);
 
             Reservation savedReservation = reservationService.saveReservation(reservation);
@@ -163,6 +160,17 @@ public class ReservationController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error canceling reservation: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/reservations/housing/{housingId}")
+    @ResponseBody
+    public ResponseEntity<?> getReservationsByHousingId(@PathVariable Long housingId) {
+        try {
+            List<Reservation> reservations = reservationService.getReservationsByHousingId(housingId);
+            return ResponseEntity.ok(reservations);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error getting reservations: " + e.getMessage());
         }
     }
 }

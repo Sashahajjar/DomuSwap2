@@ -1,5 +1,6 @@
 package com.webtech.homeservicesapp.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -15,10 +16,12 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "housing_id", nullable = false)
+    @JsonBackReference(value = "housing-reservations")
     private Housing housing;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference(value = "user-reservations")
     private User user;
 
     @Column(name = "check_in", nullable = false)
@@ -27,20 +30,8 @@ public class Reservation {
     @Column(name = "check_out", nullable = false)
     private LocalDate checkOutDate;
 
-    @Column(name = "check_in_date", nullable = false)
-    private LocalDate checkInDate2;
-
-    @Column(name = "check_out_date", nullable = false)
-    private LocalDate checkOutDate2;
-
     @Column(name = "guests", nullable = false)
-    private int guests;
-
-    @Column(name = "guest_count", nullable = false)
     private int guestCount;
-
-    @Column(name = "total_price", nullable = false)
-    private Double totalPrice;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -86,44 +77,12 @@ public class Reservation {
         this.checkOutDate = checkOutDate;
     }
 
-    public LocalDate getCheckInDate2() {
-        return checkInDate2;
-    }
-
-    public void setCheckInDate2(LocalDate checkInDate2) {
-        this.checkInDate2 = checkInDate2;
-    }
-
-    public LocalDate getCheckOutDate2() {
-        return checkOutDate2;
-    }
-
-    public void setCheckOutDate2(LocalDate checkOutDate2) {
-        this.checkOutDate2 = checkOutDate2;
-    }
-
-    public int getGuests() {
-        return guests;
-    }
-
-    public void setGuests(int guests) {
-        this.guests = guests;
-    }
-
     public int getGuestCount() {
         return guestCount;
     }
 
     public void setGuestCount(int guestCount) {
         this.guestCount = guestCount;
-    }
-
-    public Double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
     }
 
     public ReservationStatus getStatus() {
@@ -134,7 +93,7 @@ public class Reservation {
         this.status = status;
     }
 
-    // ✅ New methods for JSP compatibility
+    // ✅ Methods for JSP compatibility
     public Date getCheckInAsDate() {
         return checkInDate == null ? null : Date.from(checkInDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }

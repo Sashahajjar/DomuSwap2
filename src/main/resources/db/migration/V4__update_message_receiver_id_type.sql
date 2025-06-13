@@ -1,0 +1,2 @@
+ALTER TABLE messages ALTER COLUMN receiver_id TYPE BIGINT;
+ALTER TABLE messages ALTER COLUMN sender_id TYPE BIGINT; 

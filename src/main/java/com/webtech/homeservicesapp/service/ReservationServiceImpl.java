@@ -35,6 +35,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public List<Reservation> getReservationsByHousingId(Long housingId) {
+        return reservationRepository.findByHousingId(housingId);
+    }
+
+    @Override
     public boolean isAvailable(Long housingId, LocalDate checkIn, LocalDate checkOut) {
         List<Reservation> existingReservations = reservationRepository.findByHousingId(housingId);
         

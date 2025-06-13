@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Optional;
+import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/users")
@@ -40,12 +41,19 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials, HttpSession session) {
         String email = credentials.get("email");
         String password = credentials.get("password");
 
         Optional<User> user = userService.login(email, password);
-        return user.<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password"));
+        if (user.isPresent()) {
+            User loggedInUser = user.get();
+            session.setAttribute("loggedInUser", loggedInUser);
+            session.setMaxInactiveInterval(30 * 60); // 30 minutes
+            return ResponseEntity.ok()
+                .header("Set-Cookie", "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly")
+                .body(loggedInUser);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
     }
 }

@@ -1,38 +1,51 @@
 package com.webtech.homeservicesapp.model;
 
-import javax.persistence.*; 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "messages")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "message_id")
+    @JsonProperty("id")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
+    @JoinColumn(name = "sender_id")
+    @JsonProperty("sender")
     private User sender;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id", nullable = false)
+    @JoinColumn(name = "receiver_id")
+    @JsonProperty("receiver")
     private User receiver;
 
-    @Column(name = "content", nullable = false, length = 1000)
+    @Column(nullable = false)
+    @JsonProperty("content")
     private String content;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonProperty("createdAt")
     private Date createdAt;
 
-    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private MessageStatus status = MessageStatus.PENDING;
+    @Column(name = "status")
+    @JsonProperty("status")
+    private MessageStatus status;
 
     @PrePersist
     protected void onCreate() {
         createdAt = new Date();
+        if (status == null) {
+            status = MessageStatus.PENDING;
+        }
     }
 
     // Getters and Setters
@@ -82,5 +95,15 @@ public class Message {
 
     public void setStatus(MessageStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", createdAt=" + createdAt +
+                ", status=" + status +
+                '}';
     }
 }

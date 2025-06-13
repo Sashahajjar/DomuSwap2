@@ -11,7 +11,16 @@ public class Review {
     private Long id;
 
     @Column(nullable = false)
-    private Integer rating;
+    private Integer cleanlinessRating;
+
+    @Column(nullable = false)
+    private Integer locationRating;
+
+    @Column(nullable = false)
+    private Integer checkinExperienceRating;
+
+    @Column(nullable = false)
+    private Integer valueForMoneyRating;
 
     @Column(length = 1000)
     private String comment;
@@ -36,12 +45,36 @@ public class Review {
         this.id = id;
     }
 
-    public Integer getRating() {
-        return rating;
+    public Integer getCleanlinessRating() {
+        return cleanlinessRating;
     }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
+    public void setCleanlinessRating(Integer cleanlinessRating) {
+        this.cleanlinessRating = cleanlinessRating;
+    }
+
+    public Integer getLocationRating() {
+        return locationRating;
+    }
+
+    public void setLocationRating(Integer locationRating) {
+        this.locationRating = locationRating;
+    }
+
+    public Integer getCheckinExperienceRating() {
+        return checkinExperienceRating;
+    }
+
+    public void setCheckinExperienceRating(Integer checkinExperienceRating) {
+        this.checkinExperienceRating = checkinExperienceRating;
+    }
+
+    public Integer getValueForMoneyRating() {
+        return valueForMoneyRating;
+    }
+
+    public void setValueForMoneyRating(Integer valueForMoneyRating) {
+        this.valueForMoneyRating = valueForMoneyRating;
     }
 
     public String getComment() {

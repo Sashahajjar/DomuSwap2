@@ -1,0 +1,3 @@
+-- This migration has already been applied to the database
+-- The checksum in the database is -1137537774
+-- This file is a placeholder to match the database state 

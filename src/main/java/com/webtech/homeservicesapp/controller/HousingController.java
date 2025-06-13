@@ -2,16 +2,23 @@ package com.webtech.homeservicesapp.controller;
 
 import com.webtech.homeservicesapp.model.HousingDTO;
 import com.webtech.homeservicesapp.model.HousingWithServicesDTO;
+import com.webtech.homeservicesapp.model.Housing;
+import com.webtech.homeservicesapp.model.RequestedService;
 import com.webtech.homeservicesapp.service.HousingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.ui.Model;
+import org.hibernate.Hibernate;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.io.InputStream;
 
 @RestController
 @RequestMapping("/api/housing")
@@ -133,13 +140,98 @@ public class HousingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HousingWithServicesDTO> getHousingById(@PathVariable Long id) {
-        return ResponseEntity.ok(housingService.getHousingWithServices(id));
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getHousingDetails(@PathVariable Long id) {
+        try {
+            Housing housing = housingService.getHousingById(id);
+            // Force initialization of services
+            Hibernate.initialize(housing.getServices());
+            
+            // Convert to DTO
+            HousingWithServicesDTO dto = new HousingWithServicesDTO();
+            dto.setTitle(housing.getTitle());
+            dto.setDescription(housing.getDescription());
+            dto.setLocation(housing.getLocation());
+            dto.setPhoto_1(housing.getPhoto_1());
+            dto.setPhoto_2(housing.getPhoto_2());
+            dto.setPhoto_3(housing.getPhoto_3());
+            dto.setConstraint_text(housing.getConstraint_text());
+            dto.setOwnerId(housing.getOwner().getId());
+            dto.setAmenities(housing.getAmenities());
+            dto.setMaxGuests(housing.getMaxGuests());
+            dto.setServices(
+                housing.getServices()
+                    .stream()
+                    .map(RequestedService::getTitle)
+                    .collect(Collectors.toList())
+            );
+            
+            return ResponseEntity.ok(dto);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateHousing(@PathVariable Long id, @RequestBody HousingWithServicesDTO dto) {
-        return housingService.updateHousing(id, dto);
+    public ResponseEntity<?> updateHousing(@PathVariable Long id, @ModelAttribute HousingWithServicesDTO dto) {
+        try {
+            // Get the existing housing
+            Housing housing = housingService.getHousingById(id);
+            
+            // Update basic fields
+            housing.setTitle(dto.getTitle());
+            housing.setDescription(dto.getDescription());
+            housing.setLocation(dto.getLocation());
+            housing.setMaxGuests(dto.getMaxGuests());
+            housing.setAmenities(dto.getAmenities());
+            
+            // Handle image update if a new image is provided
+            if (dto.getImageFile() != null && !dto.getImageFile().isEmpty()) {
+                String imagePath = saveImage(dto.getImageFile());
+                housing.setPhoto_1(imagePath);
+            }
+            
+            // Update services
+            List<RequestedService> services = new ArrayList<>();
+            if (dto.getServices() != null) {
+                for (String serviceTitle : dto.getServices()) {
+                    RequestedService service = new RequestedService();
+                    service.setTitle(serviceTitle);
+                    service.setHousing(housing);
+                    services.add(service);
+                }
+            }
+            housing.setServices(services);
+            
+            // Save the updated housing
+            housingService.updateHousing(id, dto);
+            
+            return ResponseEntity.ok("Housing updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating housing: " + e.getMessage());
+        }
+    }
+
+    private String saveImage(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Failed to store empty file");
+        }
+
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String uploadDir = "uploads/";
+        Path uploadPath = Paths.get(uploadDir);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/" + fileName;
+        } catch (IOException e) {
+            throw new IOException("Could not store file " + fileName, e);
+        }
     }
 
     @DeleteMapping("/delete/{id}")

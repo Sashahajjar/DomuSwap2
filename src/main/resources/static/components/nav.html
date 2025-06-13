@@ -1,0 +1,89 @@
+<!-- Desktop Navigation -->
+<nav class="nav-container">
+  <div class="container flex justify-between items-center">
+    <a href="main_page.html" class="logo flex items-center gap-sm">
+      <img src="images/logo_white.png" alt="DomuSwap Logo" class="nav-logo" height="40">
+      <span class="logo-text">DomuSwap</span>
+    </a>
+
+    <div class="nav-links hide-sm">
+      <a href="main_page.html">Home</a>
+      <a href="portfolio.html">My Portfolio</a>
+      <a href="settings.html">Settings</a>
+      <button class="btn-primary" id="addListingBtn">Add Listing</button>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn hide-md" id="mobileMenuBtn">☰</button>
+  </div>
+</nav>
+
+<!-- Mobile Navigation -->
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-header flex justify-between items-center p-md">
+    <img src="images/logo_white.png" alt="DomuSwap Logo" height="40">
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+  </div>
+  
+  <div class="mobile-nav-links flex flex-col gap-md p-md">
+    <a href="main_page.html">Home</a>
+    <a href="portfolio.html">My Portfolio</a>
+    <a href="settings.html">Settings</a>
+    <button class="btn-primary w-full" id="mobileAddListingBtn">Add New Listing</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileNav = document.getElementById('mobileNav');
+  const mobileNavClose = document.getElementById('mobileNavClose');
+  const addListingBtn = document.getElementById('addListingBtn');
+  const mobileAddListingBtn = document.getElementById('mobileAddListingBtn');
+
+  // Toggle mobile menu
+  mobileMenuBtn.addEventListener('click', () => {
+    mobileNav.classList.add('active');
+  });
+
+  mobileNavClose.addEventListener('click', () => {
+    mobileNav.classList.remove('active');
+  });
+
+  // Close mobile menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!mobileNav.contains(e.target) && e.target !== mobileMenuBtn) {
+      mobileNav.classList.remove('active');
+    }
+  });
+
+  // Handle add listing button clicks
+  function handleAddListing() {
+    const user = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (!user) {
+      alert('Please log in to add a listing');
+      window.location.href = 'main_page.html';
+      return;
+    }
+    window.location.href = 'portfolio.html';
+  }
+
+  addListingBtn?.addEventListener('click', handleAddListing);
+  mobileAddListingBtn?.addEventListener('click', handleAddListing);
+
+  // Update navigation based on user login status
+  const user = JSON.parse(localStorage.getItem('loggedInUser'));
+  if (user) {
+    const navLinks = document.querySelector('.nav-links');
+    const mobileNavLinks = document.querySelector('.mobile-nav-links');
+    
+    // Add user name display
+    const userNameDisplay = document.createElement('span');
+    userNameDisplay.className = 'user-name';
+    userNameDisplay.textContent = user.name;
+    
+    navLinks?.insertBefore(userNameDisplay, navLinks.firstChild);
+    mobileNavLinks?.insertBefore(userNameDisplay.cloneNode(true), mobileNavLinks.firstChild);
+  }
+});
+</script> 

@@ -1,0 +1,72 @@
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ff4444;
+    color: white;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+/* Notification Toast */
+.notification-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    transform: translateX(120%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.notification-toast.show {
+    transform: translateX(0);
+}
+
+.notification-content h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.notification-content p {
+    margin: 0;
+    color: #666;
+}
+
+/* Message List Styles */
+.messages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+}
+
+.message-item {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    max-width: 80%;
+}
+
+.message-item .message-content p {
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+.message-item .message-content small {
+    color: #666;
+    font-size: 12px;
+} 

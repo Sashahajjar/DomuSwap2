@@ -1,0 +1,6 @@
+CREATE SEQUENCE IF NOT EXISTS message_sequence
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1; 

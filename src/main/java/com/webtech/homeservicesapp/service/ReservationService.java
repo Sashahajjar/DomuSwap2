@@ -9,6 +9,7 @@ public interface ReservationService {
     List<Reservation> getAllReservations();
     List<Reservation> getReservationsByUserId(Long userId);
     List<Reservation> getReservationsByOwnerId(Long ownerId);
+    List<Reservation> getReservationsByHousingId(Long housingId);
     boolean isAvailable(Long housingId, LocalDate checkIn, LocalDate checkOut);
     Reservation getReservationById(Long id);
     void deleteReservation(Long reservationId);

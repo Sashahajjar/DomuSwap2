@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,9 +35,12 @@ public class SavedListingController {
 
     @GetMapping("/saved_listings")
     public String showSavedListings(@RequestParam Long userId, Model model) {
-        // Get saved listings with housing data eagerly loaded
+        // Get saved listings with housing data and owner information eagerly loaded
         List<SavedListing> savedListings = entityManager.createQuery(
-            "SELECT sl FROM SavedListing sl JOIN FETCH sl.housing WHERE sl.userId = :userId", 
+            "SELECT sl FROM SavedListing sl " +
+            "JOIN FETCH sl.housing h " +
+            "JOIN FETCH h.owner " +
+            "WHERE sl.userId = :userId", 
             SavedListing.class)
             .setParameter("userId", userId)
             .getResultList();
@@ -65,10 +69,17 @@ public class SavedListingController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/api/saved-listings/{id}")
+    @DeleteMapping("/api/saved-listings")
     @ResponseBody
-    public ResponseEntity<?> removeSavedListing(@PathVariable Long id) {
-        savedListingRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @Transactional
+    public ResponseEntity<?> removeSavedListing(
+            @RequestParam(value = "userId", required = true) Long userId,
+            @RequestParam(value = "housingId", required = true) Long housingId) {
+        try {
+            savedListingRepository.deleteByUserIdAndHousingId(userId, housingId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error removing saved listing: " + e.getMessage());
+        }
     }
 } 
