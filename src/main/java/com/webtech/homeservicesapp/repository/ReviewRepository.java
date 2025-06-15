@@ -28,4 +28,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT AVG(r.valueForMoneyRating) FROM Review r WHERE r.housing.housing_id = :housingId")
     Double getAverageValueForMoneyByHousingId(@Param("housingId") Long housingId);
+
+    @Query("SELECT AVG((r.cleanlinessRating + r.locationRating + r.checkinExperienceRating + r.valueForMoneyRating) / 4.0) FROM Review r WHERE r.housing.owner.id = :ownerId")
+    Double getAverageRatingByOwnerId(@Param("ownerId") Long ownerId);
 } 

@@ -8,6 +8,7 @@
   <title>Listing Page - DomuSwap</title>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;700&family=Judson&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles/common.css">
+  <link href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.css" rel="stylesheet" />
   
   <style>
     :root {
@@ -457,6 +458,22 @@
     .close:hover {
       color: black;
     }
+
+    .image-upload-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .preview-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1.5px solid #e4d9c7;
+      background: #f5f5f5;
+      margin-left: 10px;
+    }
   </style> 
 </head>
 
@@ -514,14 +531,20 @@
     <div class="left-content">
       <h2 style="margin-bottom: 15px;">📍 ${housing.location}, ${housing.title}</h2>
       <div class="photo-grid">
-		<c:if test="${not empty housing.photo_1}">
-		  <div style="background-image: url('${housing.photo_1}');"></div>
-		</c:if>
+        <c:if test="${not empty housing.photo_1}">
+          <a data-fancybox="gallery" href="${housing.photo_1}">
+            <img src="${housing.photo_1}" alt="Photo 1" style="width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer;" />
+          </a>
+        </c:if>
         <c:if test="${not empty housing.photo_2}">
-          <div style="background-image: url('${housing.photo_2}');"></div>
+          <a data-fancybox="gallery" href="${housing.photo_2}">
+            <img src="${housing.photo_2}" alt="Photo 2" style="width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer;" />
+          </a>
         </c:if>
         <c:if test="${not empty housing.photo_3}">
-          <div style="background-image: url('${housing.photo_3}');"></div>
+          <a data-fancybox="gallery" href="${housing.photo_3}">
+            <img src="${housing.photo_3}" alt="Photo 3" style="width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer;" />
+          </a>
         </c:if>
       </div>
 
@@ -595,9 +618,6 @@
         </form>
 
         <c:url var="chatUrl" value="/message/owner/${housing.id}" />
-        <button class="btn" style="background: #E4D9C7; color: var(--neutral-dark);" onclick="location.href='${chatUrl}'">
-          Text the Owner
-        </button>
         <button class="btn" style="background: #28A745; color: white; margin-top: 10px;" onclick="saveListing('${housing.id}')">
           Save Listing
         </button>
@@ -843,6 +863,23 @@
         }
       }
     });
+
+    function previewImage(input, num) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById('preview' + num);
+          img.src = e.target.result;
+          img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.js"></script>
+  <script>
+    Fancybox.bind("[data-fancybox='gallery']", {});
   </script>
 </body>
 </html>

@@ -9,6 +9,7 @@ function handleLogin(event) {
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ email, password })
     })
     .then(response => {
@@ -19,8 +20,8 @@ function handleLogin(event) {
     })
     .then(user => {
         console.log('Login successful:', user);
-        // Store user data in localStorage
-        localStorage.setItem('userData', JSON.stringify({
+        // Store user data in localStorage (as 'loggedInUser' for consistency)
+        localStorage.setItem('loggedInUser', JSON.stringify({
             id: user.id,
             name: user.name,
             email: user.email,

@@ -606,4 +606,68 @@ button, .btn {
     padding: 0;
     margin: 0;
   }
+}
+
+/* Additional responsive styles */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+@media (max-width: 992px) {
+    .container {
+        max-width: 720px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        max-width: 540px;
+    }
+    
+    .nav-menu {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .nav-menu a {
+        margin: 5px 0;
+    }
+    
+    .booking-card,
+    .reservation-card,
+    .chat-container {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .booking-header,
+    .reservation-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .action-buttons button {
+        width: 100%;
+    }
+    
+    .chat-input {
+        flex-direction: column;
+    }
+    
+    .chat-input button {
+        width: 100%;
+        margin-top: 10px;
+    }
 } 

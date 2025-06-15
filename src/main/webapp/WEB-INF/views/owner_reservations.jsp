@@ -106,13 +106,86 @@
             background: #ccc;
             cursor: not-allowed;
         }
+
+        /* Review Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .rating-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .stars {
+            display: inline-block;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .star {
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .star.active {
+            color: #FFD700;
+        }
+
+        .submit-review {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #17A2B8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .submit-review:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
     <div class="nav-menu">
-        <a href="/owner">Dashboard</a>
-        <a href="/owner/reservations?ownerId=${param.ownerId}">Reservations</a>
-        <a href="/portfolio">My Listings</a>
+        <a href="/owner.html">Dashboard</a>
+        <a href="/owner_reservations.html?ownerId=${param.ownerId}">Reservations</a>
+        <a href="/portfolio.html">My Listings</a>
     </div>
 
     <h1>📋 Owner Dashboard - Reservations</h1>
@@ -167,21 +240,146 @@
         </div>
     </c:forEach>
 
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Review Customer</h2>
+            <div class="rating-container">
+                <div class="stars">
+                    <span class="star" data-rating="1">★</span>
+                    <span class="star" data-rating="2">★</span>
+                    <span class="star" data-rating="3">★</span>
+                    <span class="star" data-rating="4">★</span>
+                    <span class="star" data-rating="5">★</span>
+                </div>
+            </div>
+            <button class="submit-review" onclick="submitReview()">Submit Review</button>
+        </div>
+    </div>
+
     <script>
+        let currentReservationId = null;
+        let selectedRating = 0;
+
         function updateStatus(reservationId, action) {
-            const endpoint = '/api/reservations/' + reservationId + '/' + action;
+            if (action === 'complete') {
+                currentReservationId = reservationId;
+                showReviewModal();
+            } else {
+                const endpoint = '/api/reservations/' + reservationId + '/' + action;
+                
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        throw new Error('Failed to update status');
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
+
+        // Modal functionality
+        const modal = document.getElementById('reviewModal');
+        const closeBtn = document.getElementsByClassName('close')[0];
+        const stars = document.getElementsByClassName('star');
+
+        function showReviewModal() {
+            modal.style.display = 'block';
+            selectedRating = 0;
+            updateStars();
+        }
+
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Star rating functionality
+        Array.from(stars).forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-rating'));
+                updateStars();
+            });
+
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                highlightStars(rating);
+            });
+
+            star.addEventListener('mouseout', function() {
+                updateStars();
+            });
+        });
+
+        function highlightStars(rating) {
+            Array.from(stars).forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                star.classList.toggle('active', starRating <= rating);
+            });
+        }
+
+        function updateStars() {
+            highlightStars(selectedRating);
+        }
+
+        function submitReview() {
+            if (selectedRating === 0) {
+                alert('Please select a rating before submitting.');
+                return;
+            }
+
+            // First complete the reservation
+            const endpoint = '/api/reservations/' + currentReservationId + '/complete';
             
             fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Now save the review
+                    return fetch('/api/reviews/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            housingId: currentReservationId,
+                            cleanlinessRating: selectedRating,
+                            locationRating: selectedRating,
+                            checkinExperienceRating: selectedRating,
+                            valueForMoneyRating: selectedRating,
+                            comment: "Owner review"
+                        })
+                    });
+                } else {
+                    throw new Error('Failed to complete reservation');
                 }
             })
             .then(response => {
                 if (response.ok) {
                     window.location.reload();
                 } else {
-                    throw new Error('Failed to update status');
+                    return response.text().then(text => { throw new Error(text); });
                 }
             })
             .catch(error => {

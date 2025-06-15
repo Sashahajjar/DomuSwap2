@@ -24,4 +24,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     
     @Query("SELECT COUNT(r) > 0 FROM Reservation r WHERE r.housing.owner.id = :ownerId AND r.user.id = :userId AND r.status IN ('PENDING', 'ACCEPTED')")
     boolean existsByHousingOwnerIdAndUserId(@Param("ownerId") Long ownerId, @Param("userId") Long userId);
+    
+    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.housing.owner.id = :ownerId AND r.status = :status")
+    int countByHousingOwnerIdAndStatus(@Param("ownerId") Long ownerId, @Param("status") com.webtech.homeservicesapp.model.ReservationStatus status);
+    
+    @Query("SELECT r FROM Reservation r WHERE r.housing.owner.id = :ownerId AND r.status = :status")
+    List<Reservation> findByHousingOwnerIdAndStatus(@Param("ownerId") Long ownerId, @Param("status") com.webtech.homeservicesapp.model.ReservationStatus status);
 }

@@ -42,6 +42,10 @@ public class User {
     @JsonProperty("rating")
     private Float rating;
 
+    @Column(length = 255)
+    @JsonProperty("profilePicture")
+    private String profilePicture;
+
     // === Constructors ===
     public User() {}
 
@@ -114,6 +118,14 @@ public class User {
 
     public void setRating(Float rating) {
         this.rating = rating;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     @Override

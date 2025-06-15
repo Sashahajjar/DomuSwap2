@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String uploadDir = Paths.get(System.getProperty("user.home"), "uploads").toAbsolutePath().toString();
+        String uploadDir = Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().toString();
         System.out.println("Configuring resource handler for uploads directory: " + uploadDir);
         
         // Verify the upload directory exists and is readable

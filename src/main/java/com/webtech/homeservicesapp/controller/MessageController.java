@@ -191,6 +191,32 @@ public class MessageController {
             return "error";
         }
     }
+
+    @GetMapping("/api/owner/{ownerId}/notifications/counts")
+    @ResponseBody
+    public java.util.Map<String, Integer> getNotificationCounts(@PathVariable Long ownerId) {
+        int unreadMessages = messageRepository.countByReceiverIdAndStatus(ownerId, com.webtech.homeservicesapp.model.MessageStatus.PENDING);
+        int pendingBookings = reservationRepository.countByHousingOwnerIdAndStatus(ownerId, com.webtech.homeservicesapp.model.ReservationStatus.PENDING);
+        return java.util.Map.of("unreadMessages", unreadMessages, "pendingBookings", pendingBookings);
+    }
+
+    @PostMapping("/api/owner/{ownerId}/notifications/mark-seen")
+    @ResponseBody
+    public ResponseEntity<?> markNotificationsAsSeen(@PathVariable Long ownerId) {
+        // Mark all unread messages as SEEN
+        List<Message> unreadMessages = messageRepository.findByReceiverIdAndStatusOrderByCreatedAtDesc(ownerId, MessageStatus.PENDING);
+        for (Message message : unreadMessages) {
+            message.setStatus(MessageStatus.ACCEPTED); // or MessageStatus.SEEN if you have it
+            messageRepository.save(message);
+        }
+        // Mark all pending bookings as ACCEPTED (or another status if appropriate)
+        List<Reservation> pendingBookings = reservationRepository.findByHousingOwnerIdAndStatus(ownerId, com.webtech.homeservicesapp.model.ReservationStatus.PENDING);
+        for (Reservation reservation : pendingBookings) {
+            reservation.setStatus(com.webtech.homeservicesapp.model.ReservationStatus.ACCEPTED); // or another status if you want
+            reservationRepository.save(reservation);
+        }
+        return ResponseEntity.ok().build();
+    }
 }
 
 class MessageRequest {

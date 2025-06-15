@@ -1,3 +1,4 @@
+<!-- TEST123-PORTFOLIO -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -662,20 +663,31 @@
                     </div>
 
                     <div class="form-bottom-section">
-                        <div class="image-upload">
-                            <label class="label_input">Upload Image</label>
-                            <input type="file" name="image" />
+                        <div class="image-upload-row">
+                            <label class="label_input">Photo 1</label>
+                            <input type="file" name="image1" accept="image/*" onchange="previewImage(this, 1)">
+                            <img id="preview1" style="max-width: 80px; display:none; margin-left:10px; border-radius:8px; border:1.5px solid #e4d9c7; background:#f5f5f5;" />
                         </div>
+                        <div class="image-upload-row">
+                            <label class="label_input">Photo 2</label>
+                            <input type="file" name="image2" accept="image/*" onchange="previewImage(this, 2)">
+                            <img id="preview2" style="max-width: 80px; display:none; margin-left:10px; border-radius:8px; border:1.5px solid #e4d9c7; background:#f5f5f5;" />
+                        </div>
+                        <div class="image-upload-row">
+                            <label class="label_input">Photo 3</label>
+                            <input type="file" name="image3" accept="image/*" onchange="previewImage(this, 3)">
+                            <img id="preview3" style="max-width: 80px; display:none; margin-left:10px; border-radius:8px; border:1.5px solid #e4d9c7; background:#f5f5f5;" />
+                        </div>
+                    </div>
 
-                        <div class="amenities-box">
-                            <strong>Select Amenities:</strong>
-                            <div class="amenities-grid">
-                                <label><input type="checkbox" name="amenities" value="tv" /> TV 📺</label>
-                                <label><input type="checkbox" name="amenities" value="wifi" /> Wi-Fi 🌐</label>
-                                <label><input type="checkbox" name="amenities" value="ac" /> AC ❄️</label>
-                                <label><input type="checkbox" name="amenities" value="balcony" /> Balcony 🪟</label>
-                                <label><input type="checkbox" name="amenities" value="laundry" /> Laundry 🧺</label>
-                            </div>
+                    <div class="amenities-box">
+                        <strong>Select Amenities:</strong>
+                        <div class="amenities-grid">
+                            <label><input type="checkbox" name="amenities" value="tv" /> TV 📺</label>
+                            <label><input type="checkbox" name="amenities" value="wifi" /> Wi-Fi 🌐</label>
+                            <label><input type="checkbox" name="amenities" value="ac" /> AC ❄️</label>
+                            <label><input type="checkbox" name="amenities" value="balcony" /> Balcony 🪟</label>
+                            <label><input type="checkbox" name="amenities" value="laundry" /> Laundry 🧺</label>
                         </div>
                     </div>
                 </div>
@@ -831,7 +843,9 @@
 	    const guests = document.getElementById("possibleGuests").value.trim();
 	    const description = document.getElementById("homeDescription").value.trim();
 	    const servicesRaw = document.getElementById("homeService").value;
-	    const imageFile = document.querySelector('input[type="file"]').files[0];
+	    const imageFile1 = document.querySelector('input[name="image1"]').files[0];
+	    const imageFile2 = document.querySelector('input[name="image2"]').files[0];
+	    const imageFile3 = document.querySelector('input[name="image3"]').files[0];
 
 	    const services = servicesRaw
 	      .split(/\n|,/)
@@ -845,8 +859,8 @@
 	      return;
 	    }
 
-	    if (!address || !country || !surface || !guests || !imageFile) {
-	      alert("❗ Please fill out all required fields and choose an image.");
+	    if (!address || !country || !surface || !guests || !imageFile1) {
+	      alert("❗ Please fill out all required fields and choose at least the first image.");
 	      return;
 	    }
 
@@ -857,7 +871,9 @@
 	    formData.append("constraint_text", `Max ${guests} guests, ${surface}m²`);
 	    formData.append("ownerId", user.id);
 	    formData.append("services", services.join(","));
-	    formData.append("image", imageFile);
+	    formData.append("image1", imageFile1);
+	    if (imageFile2) formData.append("image2", imageFile2);
+	    if (imageFile3) formData.append("image3", imageFile3);
 	    formData.append("maxGuests", guests);
 		
 		const selectedAmenities = Array.from(document.querySelectorAll('input[name="amenities"]:checked'))
@@ -866,7 +882,7 @@
 
 		formData.append("amenities", selectedAmenities);
 
-	    fetch("http://localhost:8080/api/housing/addWithImage", {
+	    fetch("http://localhost:8080/api/housing/addWithImages", {
 	      method: "POST",
 	      body: formData
 	    })
@@ -1024,6 +1040,19 @@
                     console.error("Error loading housing details:", error);
                     alert("Error loading housing details. Please try again.");
                 });
+        }
+
+        function previewImage(input, num) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('preview' + num);
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
         }
 	</script>
 </body>

@@ -188,7 +188,6 @@
 <body>
     <div class="nav-menu">
         <a href="/owner.html">Dashboard</a>
-        <a href="/owner/reservations?ownerId=${param.ownerId}">Reservations</a>
         <a href="/portfolio.html">My Listings</a>
     </div>
 
@@ -209,7 +208,7 @@
                     <div class="booking-details">
                         <div class="detail-row">
                             <div class="detail-label">Guest:</div>
-                            <div class="detail-value">${reservation.user.name}</div>
+                            <div class="detail-value" data-user-id="${reservation.user.id}">${reservation.user.name}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Check-in:</div>
@@ -245,7 +244,9 @@
                         <c:if test="${reservation.status == 'ACCEPTED'}">
                             <button class="btn btn-complete" 
                                     data-reservation-id="${reservation.id}"
-                                    onclick="updateStatus(this.getAttribute('data-reservation-id'), 'complete')">
+                                    data-user-id="${reservation.user.id}"
+                                    data-user-name="${reservation.user.name}"
+                                    onclick="handleCompleteClick(this)">
                                 Mark as Completed
                             </button>
                         </c:if>
@@ -269,6 +270,33 @@
         </div>
     </div>
 
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4);">
+        <div class="modal-content" style="background-color: #FAF9F7; margin: 15% auto; padding: 30px; border: none; width: 90%; max-width: 400px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <h2 style="color: #2A2729; margin-bottom: 20px; text-align: center;">Review Tenant</h2>
+            <p style="color: #666; text-align: center; margin-bottom: 25px;">How was your experience with <span id="reviewUserName" style="font-weight: bold; color: #2A2729;"></span>?</p>
+            
+            <form id="reviewForm" onsubmit="submitReview(event)" style="text-align: center;">
+                <input type="hidden" id="reviewReservationId" name="reservationId">
+                <input type="hidden" id="reviewUserId" name="userId">
+                <input type="hidden" id="rating" name="rating" value="0">
+                
+                <div class="star-rating" style="margin-bottom: 30px;">
+                    <span class="star" data-rating="1" style="font-size: 2em; color: #ddd; cursor: pointer; margin: 0 5px;">★</span>
+                    <span class="star" data-rating="2" style="font-size: 2em; color: #ddd; cursor: pointer; margin: 0 5px;">★</span>
+                    <span class="star" data-rating="3" style="font-size: 2em; color: #ddd; cursor: pointer; margin: 0 5px;">★</span>
+                    <span class="star" data-rating="4" style="font-size: 2em; color: #ddd; cursor: pointer; margin: 0 5px;">★</span>
+                    <span class="star" data-rating="5" style="font-size: 2em; color: #ddd; cursor: pointer; margin: 0 5px;">★</span>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button type="button" onclick="closeReviewModal()" style="padding: 10px 20px; margin-right: 10px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Cancel</button>
+                    <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Global variables
         const ownerId = ${param.ownerId};
@@ -279,11 +307,33 @@
             return document.querySelector('meta[name="_csrf"]').getAttribute('content');
         }
         
+        // Handle the complete button click
+        function handleCompleteClick(button) {
+            console.log('Complete button clicked');
+            const reservationId = button.getAttribute('data-reservation-id');
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+            
+            console.log('Reservation ID:', reservationId);
+            console.log('User ID:', userId);
+            console.log('User Name:', userName);
+            
+            openReviewModal(reservationId, userId, userName);
+        }
+        
         // Utility functions
         function updateStatus(reservationId, action) {
+            console.log('Updating status:', { reservationId, action });
+            
+            if (action === 'complete') {
+                // For complete action, we'll handle it in handleCompleteClick
+                return Promise.resolve();
+            }
+            
+            // For other actions (accept/reject), proceed as normal
             const endpoint = '/api/reservations/' + reservationId + '/' + action;
             
-            fetch(endpoint, {
+            return fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -298,6 +348,7 @@
                 }
             })
             .catch(error => {
+                console.error('Error updating status:', error);
                 alert('Error: ' + error.message);
             });
         }
@@ -405,6 +456,120 @@
                 }
             }, 5000);
         });
+
+        // Review Modal Functions
+        function openReviewModal(reservationId, userId, userName) {
+            console.log('Opening review modal for:', reservationId, userId, userName);
+            document.getElementById('reviewReservationId').value = reservationId;
+            document.getElementById('reviewUserId').value = userId;
+            document.getElementById('reviewUserName').textContent = userName;
+            document.getElementById('reviewModal').style.display = 'block';
+        }
+        
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+        
+        // Star Rating Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star');
+            const ratingInput = document.getElementById('rating');
+            
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const rating = this.getAttribute('data-rating');
+                    highlightStars(rating);
+                });
+                
+                star.addEventListener('mouseout', function() {
+                    const currentRating = ratingInput.value;
+                    highlightStars(currentRating);
+                });
+                
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    ratingInput.value = rating;
+                    highlightStars(rating);
+                });
+            });
+        });
+        
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                const starRating = star.getAttribute('data-rating');
+                if (starRating <= rating) {
+                    star.style.color = '#FFD700'; // Gold color for selected stars
+                } else {
+                    star.style.color = '#ddd'; // Gray color for unselected stars
+                }
+            });
+        }
+        
+        function submitReview(event) {
+            event.preventDefault();
+            console.log('Submitting review...');
+            
+            const reservationId = document.getElementById('reviewReservationId').value;
+            const userId = document.getElementById('reviewUserId').value;
+            const rating = document.getElementById('rating').value;
+            
+            if (rating === '0') {
+                alert('Please select a rating before submitting.');
+                return;
+            }
+            
+            console.log('Review data:', { reservationId, userId, rating });
+            
+            // Submit the owner-to-customer review
+            fetch('/api/reviews/customer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    reservationId: reservationId,
+                    customerId: userId,
+                    rating: parseInt(rating)
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+                console.log('Review submitted successfully');
+                // After review is submitted, update the reservation status
+                return fetch('/api/reservations/' + reservationId + '/complete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken()
+                    }
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+                console.log('Status updated successfully');
+                // Hide the review modal
+                closeReviewModal();
+                // Hide the "Mark as Complete" button
+                const completeButton = document.querySelector(`button[data-reservation-id="${reservationId}"]`);
+                if (completeButton) {
+                    completeButton.style.display = 'none';
+                }
+                // Show success message
+                alert('Review submitted successfully and reservation marked as complete!');
+                // Reload the page to reflect changes
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to submit review: ' + error.message);
+            });
+        }
     </script>
 </body>
 </html> 

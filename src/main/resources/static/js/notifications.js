@@ -166,4 +166,160 @@ class NotificationHandler {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, initializing notification handler');
     window.notificationHandler = new NotificationHandler();
-}); 
+});
+
+// Notifications functionality
+class Notifications {
+    constructor() {
+        this.notifications = [];
+        this.container = null;
+        this.init();
+    }
+
+    init() {
+        // Create notifications container if it doesn't exist
+        if (!document.getElementById('notifications-container')) {
+            this.container = document.createElement('div');
+            this.container.id = 'notifications-container';
+            this.container.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            `;
+            document.body.appendChild(this.container);
+        } else {
+            this.container = document.getElementById('notifications-container');
+        }
+    }
+
+    show(message, type = 'info', duration = 5000) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.style.cssText = `
+            padding: 15px 20px;
+            border-radius: 4px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+        `;
+
+        // Add icon based on type
+        const icon = document.createElement('span');
+        icon.className = 'notification-icon';
+        switch (type) {
+            case 'success':
+                icon.textContent = '✓';
+                notification.style.borderLeft = '4px solid #28a745';
+                break;
+            case 'error':
+                icon.textContent = '✕';
+                notification.style.borderLeft = '4px solid #dc3545';
+                break;
+            case 'warning':
+                icon.textContent = '⚠';
+                notification.style.borderLeft = '4px solid #ffc107';
+                break;
+            default:
+                icon.textContent = 'ℹ';
+                notification.style.borderLeft = '4px solid #17a2b8';
+        }
+
+        // Add message
+        const messageEl = document.createElement('span');
+        messageEl.textContent = message;
+
+        // Add close button
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '×';
+        closeBtn.style.cssText = `
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 10px;
+            color: #666;
+        `;
+        closeBtn.onclick = () => this.remove(notification);
+
+        // Assemble notification
+        notification.appendChild(icon);
+        notification.appendChild(messageEl);
+        notification.appendChild(closeBtn);
+        this.container.appendChild(notification);
+
+        // Auto remove after duration
+        if (duration > 0) {
+            setTimeout(() => this.remove(notification), duration);
+        }
+
+        // Add to notifications array
+        this.notifications.push(notification);
+    }
+
+    remove(notification) {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+            if (notification.parentNode === this.container) {
+                this.container.removeChild(notification);
+            }
+            const index = this.notifications.indexOf(notification);
+            if (index > -1) {
+                this.notifications.splice(index, 1);
+            }
+        }, 300);
+    }
+
+    success(message, duration) {
+        this.show(message, 'success', duration);
+    }
+
+    error(message, duration) {
+        this.show(message, 'error', duration);
+    }
+
+    warning(message, duration) {
+        this.show(message, 'warning', duration);
+    }
+
+    info(message, duration) {
+        this.show(message, 'info', duration);
+    }
+}
+
+// Add notification styles
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Create global notifications instance
+window.notifications = new Notifications(); 

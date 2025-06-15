@@ -46,3 +46,8 @@ Desktop.ini
 *.log
 application-local.properties
 application-dev.properties
+
+### Uploads Directory ###
+/uploads/
+/uploads/*
+!/uploads/.gitkeep

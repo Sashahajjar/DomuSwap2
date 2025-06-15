@@ -76,12 +76,35 @@
             border-radius: 12px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.05);
         }
+        .profile-pic-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
         .profile-pic {
             width: 150px;
             height: 150px;
-            background: #ddd;
+            object-fit: cover;
             border-radius: 12px;
-            margin-bottom: 20px;
+            background: #ddd;
+            margin-bottom: 10px;
+            border: 2px solid #e4d9c7;
+        }
+        .change-pic-btn {
+            background: #7EA780;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-family: var(--font-title);
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+        .change-pic-btn:hover {
+            background: #193E15;
         }
         .user-name {
             font-family: var(--font-title);
@@ -144,6 +167,38 @@
             margin: 30px auto;
             padding: 0 30px;
         }
+        .rating-small{
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            font-family: var(--font-title);
+            font-size: 1rem;
+            color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .rating-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--neutral-dark);
+        }
+        .rating-small .rating-star {
+            font-size: 1.5rem;
+            color: gold;
+            vertical-align: middle;
+        }
+        .rating-label{
+            font-family: var(--font-title);
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--green-soft);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -152,14 +207,23 @@
             <img src="images/logo.png" alt="DomuSwap Logo">
         </a>
         <div id="central_header">
-            <h1>Welcome Back to Your Account <span id="customerNameHeader">CUSTOMER</span>!</h1>
+            <h1>Welcome Back to Your Account <span id="customerName">CUSTOMER</span>!</h1>
             <p>Stay up to date with new information on this page</p>
+        </div>
+        <!-- Rating Box -->
+        <div class="rating-small">
+            <div class="rating-label">RATING</div>
+            <div class="rating-number">0.0 <span class="rating-star">⭐</span></div>
         </div>
     </header>
     <div class="container">
         <div class="profile-layout">
             <div class="profile-left">
-                <div class="profile-pic"></div>
+                <div class="profile-pic-container">
+                    <img id="profilePic" class="profile-pic" src="images/default_avatar.png" alt="Profile Picture">
+                    <input type="file" id="profilePicInput" accept="image/*" style="display:none;">
+                    <button class="change-pic-btn" onclick="document.getElementById('profilePicInput').click();">Change Photo</button>
+                </div>
                 <div class="user-name" id="customerNameProfile">CUSTOMER NAME</div>
                 <div class="user-info">
                     <p id="customerEmail">customer@email.com</p>
@@ -183,7 +247,7 @@
         // Set customer name and email from localStorage if available
         const user = JSON.parse(localStorage.getItem('loggedInUser'));
         if (user) {
-            document.getElementById('customerNameHeader').textContent = user.name.toUpperCase();
+            document.getElementById('customerName').textContent = user.name.toUpperCase();
             document.getElementById('customerNameProfile').textContent = user.name.toUpperCase();
             document.getElementById('customerEmail').textContent = user.email;
             const headerTitle = document.querySelector('#central_header h1');
@@ -191,9 +255,23 @@
                 headerTitle.textContent = `Welcome Back to Your Account ${user.name.toUpperCase()}!`;
             }
         } else {
-            document.getElementById('customerNameHeader').textContent = 'CUSTOMER';
+            document.getElementById('customerName').textContent = 'CUSTOMER';
             document.getElementById('customerNameProfile').textContent = 'CUSTOMER NAME';
         }
+
+        // Fetch and update the average rating
+        if (user && user.id) {
+            fetch(`/api/reviews/customer/average?userId=${user.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    const ratingNumber = document.querySelector('.rating-number');
+                    if (ratingNumber) {
+                        ratingNumber.innerHTML = `${data.averageRating.toFixed(1)} <span class="rating-star">⭐</span>`;
+                    }
+                })
+                .catch(error => console.error('Error fetching rating:', error));
+        }
+
         function navigateToSavedListings() {
             const user = JSON.parse(localStorage.getItem('loggedInUser'));
             if (user && user.id) {
@@ -203,6 +281,7 @@
                 window.location.href = 'main_page.html';
             }
         }
+
         function navigateToTripsHistory() {
             const user = JSON.parse(localStorage.getItem('loggedInUser'));
             if (user && user.id) {
@@ -212,11 +291,44 @@
                 window.location.href = 'main_page.html';
             }
         }
+
         // Logout logic
         document.getElementById('logoutBtn').onclick = function() {
             localStorage.removeItem('loggedInUser');
             window.location.href = 'main_page.html';
         };
+
+        // Add after user is set in JS
+        if (user && user.id) {
+            fetch(`/api/users/${user.id}/profile-picture`)
+                .then(res => {
+                    if (res.ok) return res.blob();
+                    throw new Error('No profile picture');
+                })
+                .then(blob => {
+                    if (blob.size > 0) {
+                        document.getElementById('profilePic').src = URL.createObjectURL(blob);
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('profilePic').src = 'images/default_avatar.png';
+                });
+        }
+        document.getElementById('profilePicInput').addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            fetch(`/api/users/${user.id}/profile-picture`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('profilePic').src = data.url;
+            })
+            .catch(() => alert('Failed to upload profile picture'));
+        });
     </script>
 </body>
 </html>

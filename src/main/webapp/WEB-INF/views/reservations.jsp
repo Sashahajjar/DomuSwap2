@@ -307,7 +307,7 @@
 </head>
 <body>
     <div class="nav-menu">
-        <a href="/reservations?userId=${param.userId}">My Reservations</a>
+        <a href="#" onclick="location.reload(); return false;">My Reservations</a>
         <a href="/customer.html">Back to Account</a>
     </div>
 
@@ -315,10 +315,10 @@
     
     <script>
         // Add current user ID
-        const currentUserId = ${param.userId};
+        const currentUserId = "${param.userId}";
     </script>
     
-            <c:forEach var="reservation" items="${reservations}">
+    <c:forEach var="reservation" items="${reservations}">
         <div class="reservation-card">
             <div class="reservation-header">
                 <div class="reservation-title">${reservation.housing.title}</div>
@@ -347,22 +347,24 @@
             </div>
             
             <div class="action-buttons">
-                <c:if test="${reservation.status == 'PENDING' || reservation.status == 'ACCEPTED'}">
+                <c:if test="${reservation.status eq 'PENDING' or reservation.status eq 'ACCEPTED'}">
                     <button class="btn btn-cancel" 
                             data-reservation-id="${reservation.id}"
-                            onclick="cancelReservation(this.getAttribute('data-reservation-id'))">
+                            onclick="cancelReservation('${reservation.id}')">
                         Cancel Booking
                     </button>
                 </c:if>
-                <c:if test="${reservation.status == 'COMPLETED'}">
+                <c:if test="${reservation.status eq 'COMPLETED'}">
                     <button class="btn btn-review" onclick="showReviewModal('${reservation.housing.id}')">
                         Leave a Review
                     </button>
                 </c:if>
-                <c:if test="${reservation.status == 'PENDING' || reservation.status == 'ACCEPTED'}">
-                    <button class="btn" style="background: #007bff; color: white;" 
-                            onclick="toggleChat(${reservation.id})">
-                        Chat with ${reservation.status == 'PENDING' ? 'Owner' : 'Tenant'}
+                <c:if test="${reservation.status eq 'PENDING' or reservation.status eq 'ACCEPTED'}">
+                    <button class="btn" style="background: #007bff; color: white;" onclick="toggleChat('${reservation.id}')">Chat</button>
+                </c:if>
+                <c:if test="${reservation.status eq 'ACCEPTED' and reservation.housing.owner.id eq param.userId}">
+                    <button class="btn btn-review" onclick="showOwnerReviewModal('${reservation.id}', '${reservation.user.id}', '${reservation.user.name}')">
+                        Mark as Complete
                     </button>
                 </c:if>
             </div>
@@ -376,16 +378,18 @@
                     <div class="chat-messages" id="messages-${reservation.id}">
                         <!-- Messages will be loaded here -->
                     </div>
-                    <div class="chat-input">
-                        <input type="text" id="message-input-${reservation.id}" 
-                               placeholder="Type your message..." 
-                               onkeypress="handleKeyPress(event, ${reservation.id}, ${reservation.housing.owner.id})">
-                        <button onclick="sendMessage(${reservation.id}, ${reservation.housing.owner.id})">Send</button>
-                    </div>
+                    <c:if test="${not empty reservation.housing.owner}">
+                        <div class="chat-input">
+                            <input type="text" id="message-input-${reservation.id}" 
+                                   placeholder="Type your message..." 
+                                   onkeypress="handleKeyPress(event, '${reservation.id}', '${reservation.housing.owner.id}')">
+                            <button onclick="sendMessage('${reservation.id}', '${reservation.housing.owner.id}')">Send</button>
+                        </div>
+                    </c:if>
                 </div>
             </c:if>
         </div>
-            </c:forEach>
+    </c:forEach>
 
     <!-- Review Modal -->
     <div id="reviewModal" class="modal">
@@ -443,6 +447,35 @@
                   <textarea id="comment" name="comment" required placeholder="Share your experience..."></textarea>
                 </div>
                 <button type="submit" class="btn btn-review">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Owner Review Modal -->
+    <div id="ownerReviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOwnerReviewModal()">&times;</span>
+            <form id="ownerReviewForm" class="review-form">
+                <h2>Review Tenant</h2>
+                <input type="hidden" id="ownerReviewReservationId" name="reservationId" />
+                <input type="hidden" id="ownerReviewTenantId" name="tenantId" />
+                <div class="criteria-row">
+                    <div class="criteria-group">
+                        <label for="tenantRating">Rating</label>
+                        <select id="tenantRating" name="tenantRating" required>
+                            <option value="5">5 ⭐️ - Excellent</option>
+                            <option value="4">4 ⭐️ - Very Good</option>
+                            <option value="3">3 ⭐️ - Good</option>
+                            <option value="2">2 ⭐️ - Fair</option>
+                            <option value="1">1 ⭐️ - Poor</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="tenantComment">Comment (optional):</label>
+                    <textarea id="tenantComment" name="tenantComment" placeholder="Share your experience with this tenant..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-review">Submit Review & Complete</button>
             </form>
         </div>
     </div>
@@ -653,6 +686,58 @@
                 }
             });
         }, 5000);
+
+        function showOwnerReviewModal(reservationId, tenantId, tenantName) {
+            document.getElementById('ownerReviewReservationId').value = reservationId;
+            document.getElementById('ownerReviewTenantId').value = tenantId;
+            document.getElementById('ownerReviewModal').style.display = 'block';
+        }
+        function closeOwnerReviewModal() {
+            document.getElementById('ownerReviewModal').style.display = 'none';
+        }
+        document.getElementById('ownerReviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const reservationId = document.getElementById('ownerReviewReservationId').value;
+            const tenantId = document.getElementById('ownerReviewTenantId').value;
+            const rating = document.getElementById('tenantRating').value;
+            const comment = document.getElementById('tenantComment').value;
+            // 1. Complete the reservation
+            fetch('/api/reservations/' + reservationId + '/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 2. Submit the review
+                    return fetch('/api/reviews/add-tenant', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            reservationId: reservationId,
+                            tenantId: tenantId,
+                            rating: parseInt(rating),
+                            comment: comment
+                        })
+                    });
+                } else {
+                    throw new Error('Failed to complete reservation');
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Review submitted and reservation marked as complete!');
+                    closeOwnerReviewModal();
+                    window.location.reload();
+                } else {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
     </script>
 </body>
 </html>

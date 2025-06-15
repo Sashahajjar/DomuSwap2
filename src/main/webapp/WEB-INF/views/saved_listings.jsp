@@ -111,6 +111,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="nav-menu">
         <a href="customer.html">Dashboard</a>
@@ -159,7 +160,7 @@
             
             if (!user || !user.id) {
                 alert('Please log in to start a chat');
-                window.location.href = '/main_page';
+                window.location.href = '/main_page.html';
                 return;
             }
             
@@ -168,7 +169,7 @@
             if (!userId || isNaN(userId)) {
                 alert('Error: Invalid user ID. Please log in again.');
                 localStorage.removeItem('loggedInUser');
-                window.location.href = '/main_page';
+                window.location.href = '/main_page.html';
                 return;
             }
             
